@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CPA Forecast Calculator</title>
+    <style>
+        /* Reset styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Body styling */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f5f5f5;
+            flex-direction: column;
+        }
+
+        /* Calculator container styling */
+        .calculator-container {
+            display: flex;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            max-width: 800px;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        /* Left side form styling */
+        .form-section {
+            padding: 30px;
+            flex: 1;
+        }
+
+        .header .logo {
+            width: 20px;
+            height: 20px;
+            background-color: black;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+        }
+
+        .form-section h1 {
+            font-size: 1.5em;
+            color: black;
+            margin-bottom: 20px;
+        }
+
+        .form-section h2 {
+            font-size: 1.25em;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .form-group input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+
+        .form-group input[type="number"]:focus {
+            border-color: #888;
+            outline: none;
+        }
+
+        .calculate-btn {
+            padding: 10px 20px;
+            background-color: #005f99;
+            color: #ffffff;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .calculate-btn:hover {
+            background-color: #007acc;
+        }
+
+        /* Right side result styling */
+        .result-section {
+            background-color: #333;
+            color: #ffffff;
+            padding: 30px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .result-section h2 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+            color: #00aaff;
+        }
+
+        .result-text {
+            font-size: 1em;
+            color: #bbbbbb;
+            margin-bottom: 20px;
+        }
+
+        .result-image {
+            max-width: 100%;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator-container">
+        <!-- Left side: Form section -->
+        <div class="form-section">
+            <div class="header">
+                <span class="logo"></span>
+                <h1 style="display:inline;">SOCIALYSTIC</h1>
+            </div>
+            <br>
+            <h2>TKEQ</h2>
+            <h3>CPA Forecast Calculator</h3>
+            <br>
+            <form id="forecastForm">
+                <div class="form-group">
+                    <label for="spend_value">Enter monthly amount to spend ($)</label>
+                    <input type="number" id="spend_value" name="spend_value" placeholder="Enter the spend amount" required>
+                </div>
+                <button type="button" class="calculate-btn" onclick="calculateForecast()">Calculate</button>
+            </form>
+        </div>
+        
+        <!-- Right side: Result section -->
+        <div class="result-section">
+            <h2>Forecast Results</h2>
+            <div id="resultText" class="result-text">Enter a spend value to calculate forecast.</div>
+        </div>
+    </div>
+
+    <!-- Image result displayed below the container -->
+    <div style="text-align: center;">
+        <img id="resultImage" class="result-image" src="" alt="" style="display: none;">
+    </div>
+
+    <script>
+        function calculateForecast() {
+            const spendValue = document.getElementById('spend_value').value;
+
+            fetch('/calculate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ spend_value: spendValue })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('resultText').textContent = data.result_text;
+                const resultImage = document.getElementById('resultImage');
+                resultImage.src = 'data:image/png;base64,' + data.plot_url;
+                resultImage.style.display = 'block';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    </script>
+</body>
+</html>
